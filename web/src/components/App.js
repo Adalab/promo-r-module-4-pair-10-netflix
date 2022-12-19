@@ -45,7 +45,7 @@ const App = () => {
 
   /*
   useEffect: obtener el perfil de la usuaria.
-  Se ejecuta cuando userId cambian de valor, es decir, cuando pasa de un string vacío a un strin relleno con el id de la usuaria.
+  Se ejecuta cuando userId cambia de valor, es decir, cuando pasa de un string vacío a un string relleno con el id de la usuaria.
   Como queremos que el back devuelva los datos de una usuaria getProfileFromApi recibe el userId.
   */
   useEffect(() => {
@@ -60,7 +60,7 @@ const App = () => {
 
   /*
   useEffect: obtener las películas de la usuaria.
-  Se ejecuta cuando userId cambian de valor, es decir, cuando pasa de un string vacío a un strin relleno con el id de la usuaria.
+  Se ejecuta cuando userId cambia de valor, es decir, cuando pasa de un string vacío a un string relleno con el id de la usuaria.
   Como queremos que el back devuelva las películas de una usuaria getUserMoviesFromApi recibe el userId.
   */
   useEffect(() => {
