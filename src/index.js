@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const movies = require('./data/movies.json');
+const users = require('./data/users.json');
 
 // create and config server
 const server = express();
@@ -41,10 +42,33 @@ server.get('/movies', (req, res) => {
     });
     filteredMovies.reverse();
   }
-
   const response = {
     success: true,
     movies: filteredMovies,
   };
   res.json(response);
 });
+console.log('hoooolis')
+server.post('/login', (req, res) => {
+  console.log(req.body)
+  const userLogin = users.find((user) => user.email.includes(req.body.email))
+  if (userLogin) {
+    const response = {
+      "success": true,
+      "userId": "id_de_la_usuaria_encontrada"
+    }
+    res.json(response);
+  } else {
+    const response = {
+      "success": false,
+      "errorMessage": "Usuaria/o no encontrada/o"
+    }
+    res.json(response);
+  }
+});
+//creamos servidor estático
+const staticServer = './src/public-react';
+server.use(express.static(staticServer))
+//servidor estático de imágenes
+const staticServerImages = './src/public-movies-images';
+server.use(express.static(staticServerImages))
