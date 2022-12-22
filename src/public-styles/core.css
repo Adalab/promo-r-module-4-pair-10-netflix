@@ -1,0 +1,17 @@
+@import url('//fonts.googleapis.com/css2?family=Roboto&display=swap');
+@import url('//beta.adalab.es/resources/stylesheets/all.css');
+
+.movie{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.movie__detail{
+    width: 20%;
+    border: solid 2px aqua;
+    border-radius: 12px;
+    padding: 20px;
+}
