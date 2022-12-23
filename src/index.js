@@ -7,6 +7,7 @@ const users = require('./data/users.json');
 const server = express();
 server.use(cors());
 server.use(express.json());
+server.set('view engine', 'ejs');
 
 // init express aplication
 const serverPort = 4000;
@@ -48,27 +49,38 @@ server.get('/movies', (req, res) => {
   };
   res.json(response);
 });
-console.log('hoooolis')
+console.log('hoooolis');
 server.post('/login', (req, res) => {
-  console.log(req.body)
-  const userLogin = users.find((user) => user.email.includes(req.body.email))
+  console.log(req.body);
+  const userLogin = users.find((user) => user.email.includes(req.body.email));
   if (userLogin) {
     const response = {
-      "success": true,
-      "userId": "id_de_la_usuaria_encontrada"
-    }
+      success: true,
+      userId: userLogin.id,
+    };
     res.json(response);
   } else {
     const response = {
-      "success": false,
-      "errorMessage": "Usuaria/o no encontrada/o"
-    }
+      success: false,
+      errorMessage: 'Usuaria/o no encontrada/o',
+    };
     res.json(response);
   }
 });
+
+server.get('/movie/:movieId', (req, res) => {
+  console.log(req.params);
+  const foundMovie = movies.find((movie) => movie.id === req.params.movieId);
+  console.log(foundMovie);
+  res.render('movie', foundMovie);
+});
+
 //creamos servidor estático
 const staticServer = './src/public-react';
-server.use(express.static(staticServer))
+server.use(express.static(staticServer));
 //servidor estático de imágenes
 const staticServerImages = './src/public-movies-images';
-server.use(express.static(staticServerImages))
+server.use(express.static(staticServerImages));
+//servido estático de estilos CSS
+const staticServerStyles = './src/public-styles';
+server.use(express.static(staticServerStyles));
