@@ -1,7 +1,13 @@
 const express = require('express');
 const cors = require('cors');
-const movies = require('./data/movies.json');
+//const movies = require('./data/movies.json');
 const users = require('./data/users.json');
+
+//crear base de datos
+const Database = require('better-sqlite3');
+const db = new Database('./src/db/database.db', {
+  verbose: console.log,
+});
 
 // create and config server
 const server = express();
@@ -16,43 +22,33 @@ server.listen(serverPort, () => {
 });
 
 server.get('/movies', (req, res) => {
+  //constantes de filtros
   const genderFilterParam = req.query.gender;
-  const sortFilterParam = req.query.sort;
-  const filteredMovies = movies.filter((eachMovie) => {
-    return eachMovie.gender.includes(genderFilterParam);
-  });
-  if (sortFilterParam === 'asc') {
-    filteredMovies.sort((a, b) => {
-      if (a.title < b.title) {
-        return -1;
-      } else if (a.title > b.title) {
-        return 1;
-      } else {
-        return 0;
-      }
-    });
-  } else {
-    filteredMovies.sort((a, b) => {
-      if (a.title < b.title) {
-        return -1;
-      } else if (a.title > b.title) {
-        return 1;
-      } else {
-        return 0;
-      }
-    });
-    filteredMovies.reverse();
+  const sortFilterParam = req.query.sort.toUpperCase();
+  //traer todas las pelis
+  const query = db.prepare(`SELECT * FROM movies ORDER BY title ${sortFilterParam}`);
+  const movies = query.all();
+  //filtrar por género
+  const queryGender = db.prepare(`SELECT * FROM movies WHERE gender = ? ORDER BY title ${sortFilterParam}`);
+  const filteredByGender = queryGender.all(genderFilterParam);
+  if (genderFilterParam !== '') {
+    const response = {
+      success: true,
+      movies: filteredByGender,
+    };
+    res.json(response);
   }
   const response = {
     success: true,
-    movies: filteredMovies,
+    movies: movies,
   };
   res.json(response);
 });
 console.log('hoooolis');
 server.post('/login', (req, res) => {
   console.log(req.body);
-  const userLogin = users.find((user) => user.email.includes(req.body.email));
+  const query = db.prepare('SELECT * FROM users WHERE email = ? AND password = ?');
+  const userLogin = query.get(req.body.email, req.body.password);
   if (userLogin) {
     const response = {
       success: true,
@@ -70,9 +66,10 @@ server.post('/login', (req, res) => {
 
 server.get('/movie/:movieId', (req, res) => {
   console.log(req.params);
-  const foundMovie = movies.find((movie) => movie.id === req.params.movieId);
-  console.log(foundMovie);
-  res.render('movie', foundMovie);
+  const query = db.prepare(`SELECT * FROM movies WHERE id =?`);
+  const movie = query.get(req.params.movieId);
+  console.log(movie);
+  res.render('movie', movie);
 });
 
 //creamos servidor estático
