@@ -26,10 +26,14 @@ server.get('/movies', (req, res) => {
   const genderFilterParam = req.query.gender;
   const sortFilterParam = req.query.sort.toUpperCase();
   //traer todas las pelis
-  const query = db.prepare(`SELECT * FROM movies ORDER BY title ${sortFilterParam}`);
+  const query = db.prepare(
+    `SELECT * FROM movies ORDER BY title ${sortFilterParam}`
+  );
   const movies = query.all();
   //filtrar por género
-  const queryGender = db.prepare(`SELECT * FROM movies WHERE gender = ? ORDER BY title ${sortFilterParam}`);
+  const queryGender = db.prepare(
+    `SELECT * FROM movies WHERE gender = ? ORDER BY title ${sortFilterParam}`
+  );
   const filteredByGender = queryGender.all(genderFilterParam);
   if (genderFilterParam !== '') {
     const response = {
@@ -47,7 +51,9 @@ server.get('/movies', (req, res) => {
 console.log('hoooolis');
 server.post('/login', (req, res) => {
   console.log(req.body);
-  const query = db.prepare('SELECT * FROM users WHERE email = ? AND password = ?');
+  const query = db.prepare(
+    'SELECT * FROM users WHERE email = ? AND password = ?'
+  );
   const userLogin = query.get(req.body.email, req.body.password);
   if (userLogin) {
     const response = {
@@ -62,6 +68,52 @@ server.post('/login', (req, res) => {
     };
     res.json(response);
   }
+});
+
+server.post('/sign-up', (req, res) => {
+  console.log(req.body);
+  const queryCheckEmail = db.prepare('SELECT * FROM users WHERE email = ?');
+  const userFound = queryCheckEmail.get(req.body.email);
+  const queryInsert = db.prepare(
+    'INSERT INTO users (email,password) VALUES (?,?)'
+  );
+
+  if (userFound) {
+    const response = {
+      success: false,
+      errorMessage: 'Usuaria/o ya existente',
+    };
+    res.json(response);
+  } else {
+    const userSignup = queryInsert.run(req.body.email, req.body.password);
+    const response = {
+      success: true,
+      userId: userSignup.lastInsertRowid,
+    };
+    res.json(response);
+  }
+});
+
+server.post('/user/profile', (req, res) => {
+  console.log(req.header['user-id']);
+  console.log(req.headers);
+  console.log(req.body);
+
+  // const queryCheckEmail = db.prepare('SELECT * FROM users WHERE email = ?');
+  // const userFound = queryCheckEmail.get(req.body.email);
+  const queryUpdate = db.prepare(
+    'UPDATE users SET name = ?,email = ?,password = ? WHERE id = ?'
+  );
+  const userProfileChange = queryUpdate.run(
+    req.body.name,
+    req.body.email,
+    req.body.password,
+    req.header['user-id']
+  );
+  const response = {
+    success: true,
+  };
+  res.json(response);
 });
 
 server.get('/movie/:movieId', (req, res) => {
