@@ -211,6 +211,7 @@ const App = () => {
           path="/profile"
           element={
             <Profile
+              userId={userId}
               userName={userName}
               userEmail={userEmail}
               userPassword={userPassword}

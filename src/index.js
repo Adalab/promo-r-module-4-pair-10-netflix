@@ -49,6 +49,8 @@ server.get('/movies', (req, res) => {
   res.json(response);
 });
 console.log('hoooolis');
+
+//endpoint para hacer el login
 server.post('/login', (req, res) => {
   console.log(req.body);
   const query = db.prepare(
@@ -70,6 +72,7 @@ server.post('/login', (req, res) => {
   }
 });
 
+//endpoint para usuarias nuevas
 server.post('/sign-up', (req, res) => {
   console.log(req.body);
   const queryCheckEmail = db.prepare('SELECT * FROM users WHERE email = ?');
@@ -94,13 +97,22 @@ server.post('/sign-up', (req, res) => {
   }
 });
 
-server.post('/user/profile', (req, res) => {
-  console.log(req.header['user-id']);
-  console.log(req.headers);
-  console.log(req.body);
+//endpoint para poder ver el perfil
+server.get('/user/profile', (req, res) => {
+  console.log(req.headers['user-id']);
+  const query = db.prepare(`SELECT * FROM users WHERE id =?`);
+  const userProfile = query.get(req.headers['user-id']);
+  const response = {
+    success: true,
+    name: userProfile.name,
+    email: userProfile.email,
+    password: userProfile.password,
+  }
+  res.json(response)
+});
 
-  // const queryCheckEmail = db.prepare('SELECT * FROM users WHERE email = ?');
-  // const userFound = queryCheckEmail.get(req.body.email);
+//endpoint para poder cambiar el perfil
+server.post('/user/profile', (req, res) => {
   const queryUpdate = db.prepare(
     'UPDATE users SET name = ?,email = ?,password = ? WHERE id = ?'
   );
@@ -108,7 +120,7 @@ server.post('/user/profile', (req, res) => {
     req.body.name,
     req.body.email,
     req.body.password,
-    req.header['user-id']
+    req.headers['user-id'],
   );
   const response = {
     success: true,
@@ -116,6 +128,7 @@ server.post('/user/profile', (req, res) => {
   res.json(response);
 });
 
+//rutas dinámicas para los detalles de la película
 server.get('/movie/:movieId', (req, res) => {
   console.log(req.params);
   const query = db.prepare(`SELECT * FROM movies WHERE id =?`);
