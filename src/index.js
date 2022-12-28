@@ -127,6 +127,38 @@ server.post('/user/profile', (req, res) => {
   };
   res.json(response);
 });
+//endpoint para obtener las películas favoritas de cada usuaria
+server.get('/user/movies', (req, res) => {
+  console.log(req.headers['user-id']);
+  const movieIdsQuery = db.prepare(
+    'SELECT movieId FROM rel_movies_users WHERE userId = ?'
+  );
+  const movieIds = movieIdsQuery.all(req.headers['user-id']);
+
+  console.log(movieIds);
+  //query dinámica
+
+  // obtenemos las interrogaciones separadas por comas
+  const moviesIdsQuestions = movieIds.map((id) => '?').join(', '); // que nos devuelve '?, ?'
+
+  // preparamos la segunda query para obtener todos los datos de las películas
+  const moviesQuery = db.prepare(
+    `SELECT * FROM movies WHERE id IN (${moviesIdsQuestions})`
+  );
+
+  // convertimos el array de objetos de id anterior a un array de números
+  const moviesIdsNumbers = movieIds.map((movie) => movie.movieId); // que nos devuelve [1.0, 2.0]
+
+  // ejecutamos segunda la query
+  const movies = moviesQuery.all(moviesIdsNumbers);
+
+  // respondemos a la petición con
+  res.json({
+    success: true,
+    movies: movies,
+  });
+});
+
 
 //rutas dinámicas para los detalles de la película
 server.get('/movie/:movieId', (req, res) => {

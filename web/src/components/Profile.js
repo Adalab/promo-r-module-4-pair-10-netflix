@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 
 const Profile = props => {
+  console.log(props)
   const [name, setName] = useState(props.userName || '');
   const [email, setEmail] = useState(props.userEmail || '');
   const [password, setPassword] = useState(props.userPassword || '');
 
-  // events
+  //podemos hacer un useEffect para levantar bien la página
 
+  // events
   const handleName = ev => {
     setName(ev.target.value);
   };

@@ -85,6 +85,11 @@ const App = () => {
   Con este evento enviamos los datos del login al servidor cuando la usuaria lanza el evento.
   Como queremos que el back devuelva el id de la usuaria sendLoginToApi recibe el email y la contraseña que ella haya escrito.
   */
+  //para añadir o quitar favoritos
+  const sendFavoritesToApi = (movieId) => {
+    apiUser.sendUserMoviesFromApi(movieId, userId)
+  };
+
   const sendLoginToApi = (loginData) => {
     // Limpiamos el error antes de enviar los datos al API
     setLoginErrorMessage('');
@@ -181,6 +186,8 @@ const App = () => {
               allMoviesOptionGender={allMoviesOptionGender}
               allMoviesOptionSort={allMoviesOptionSort}
               handleAllMoviesOptions={handleAllMoviesOptions}
+              userMovies={userMovies}
+              sendFavoritesToApi={sendFavoritesToApi}
             />
           }
         />

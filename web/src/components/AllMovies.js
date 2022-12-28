@@ -56,7 +56,7 @@ const AllMovies = props => {
         </div>
       </form>
 
-      <MoviesList movies={props.movies} />
+      <MoviesList movies={props.movies} userMovies={props.userMovies} sendFavoritesToApi={props.sendFavoritesToApi} />
     </section>
   );
 };
